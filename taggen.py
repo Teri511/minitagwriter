@@ -24,7 +24,18 @@ from PIL import Image, ImageFont, ImageDraw
 #set up the global canvas/draw space/fonts and number of each tag generated
 small_canvas = Image.new("RGB",(2430,3008),(150,150,255))
 draw = ImageDraw.Draw(small_canvas)
-font = ImageFont.truetype("MyriadPro-Cond.ttf",35)
+small_font = ImageFont.truetype("MyriadPro-Cond.ttf",35)
+small_tag_count = 0
+small_curr_row = 0
+small_page_count = 0
+large_tag_count = 0
+large_curr_row = 0
+large_page_count = 0
+parts_tag_count = 0
+parts_curr_row = 0
+parts_page_count = 0
+
+
 
 ############################################
 # add_tag_to_canvas                        #
@@ -45,8 +56,69 @@ font = ImageFont.truetype("MyriadPro-Cond.ttf",35)
 #                   6 is # of parts tags   #
 ############################################
 def add_tag_to_canvas(prices,text,quantities):
+    global small_canvas
+    global draw
+    global small_font
+    global small_tag_count
+    global small_curr_row
 
-    print "lolno"
+    #for each quantity, generate that many tags
+    if quantities[0] > 0:
+        #generate small normal tags
+        print "generating small normal tags"
+        tag = Image.open("images/small/sbase.png")
+        for count in range(0,quantities[0]):
+            small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
+            if small_tag_count%5 == 4:
+                small_curr_row += 1
+            small_tag_count +=1
+            #small_canvas.show()
+            #add the text here
+            #check to see if we've filled a page goes here
+
+    if quantities[1] > 0:
+        #generate small sale tags
+        print "generating small sale tags"
+        tag = Image.open("images/small/ssale.png")
+        for count in range(0,quantities[1]):
+            small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
+            if small_tag_count%5 == 4:
+                small_curr_row += 1
+            small_tag_count +=1
+            #small_canvas.show()
+            #add the text here
+            #check to see if we've filled a page goes here
+    if quantities[2] > 0:
+        #generate small clear tags
+        print "generating small clear tags"
+        tag = Image.open("images/small/sclear.png")
+        for count in range(0,quantities[1]):
+            small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
+            if small_tag_count%5 == 4:
+                small_curr_row += 1
+            small_tag_count +=1
+            #small_canvas.show()
+            #add the text here
+            #check to see if we've filled a page goes here
+    if quantities[3] > 0:
+        #generate small normal tags
+        print "generating large normal tags"
+        tag = Image.open("images/big/bbase.png")
+    if quantities[4] > 0:
+        #generate small sale tags
+        print "generating large sale tags"
+        tag = Image.open("images/big/bsale.png")
+    if quantities[5] > 0:
+        #generate small clear tags
+        print "generating large clear tags"
+        tag = Image.open("images/big/bclear.png")
+    if quantities[6] > 0:
+        #generate parts tags
+        print "generating parts tags"
+    small_canvas.save("test.png","PNG",dpi=(300,300))
+
+###################################################
+#start of
 
 if len(sys.argv) == 2:
 
@@ -58,14 +130,15 @@ if len(sys.argv) == 2:
     sheet = book.sheet_by_index(0)
 
     #loop across each row
-    for row in range(0,sheet.nrows):
+    for row in range(1,sheet.nrows):
         #check to make sure our users didn't skip any rows
         if sheet.cell_value(row,0) != '':
             #check for valid data across the row
             #pull the info and pass to the tag maker routine
             nprices = (sheet.cell_value(row,3),sheet.cell_value(row,4))
             ntext = (sheet.cell_value(row,1),sheet.cell_value(row,0),sheet.cell_value(row,2))
-            nquantities = (sheet.cell_value(row,5),sheet.cell_value(row,6),sheet.cell_value(row,7),sheet.cell_value(row,8),sheet.cell_value(row,9),sheet.cell_value(row,10),sheet.cell_value(row,11))
+            nquantities = (int(sheet.cell_value(row,5)),int(sheet.cell_value(row,6)),int(sheet.cell_value(row,7)),int(sheet.cell_value(row,8)),int(sheet.cell_value(row,9)),int(sheet.cell_value(row,10)),int(sheet.cell_value(row,11)))
+            print "genning row " + str(row)
             add_tag_to_canvas(nprices,ntext,nquantities)
 else:
     print "incorrect number of arguments"
