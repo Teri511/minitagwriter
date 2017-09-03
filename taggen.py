@@ -72,16 +72,40 @@ def add_tag_to_canvas(prices,text,quantities):
         #generate small normal tags
         print "generating small normal tags"
         tag = Image.open("images/small/sbase.png")
-        for count in range(0,quantities[0]):
+        name = str(text[0]).split("/")
+        for count in range(0,quantities[1]):
+            #check to see if we've filled a page
+            if small_tag_count > 39:
+                #dump the current canvas to a file and start a new one
+                small_canvas.save("output/small page "+ str(small_page_count) + ".png","PNG",dpi=(300,300))
+                small_tag_count = 0
+                small_curr_row = 0
+                small_page_count += 1
+                small_canvas = Image.new("RGB",(2430,3008),(150,150,255))
+                draw = ImageDraw.Draw(small_canvas)
+            #split the string using evil casting magic
+            dollar = str(int(prices[1]))
+            #I'm so sorry
+            #take the price, convert it to a string and take the last 2 chars from it, these will always be the cents
+            cents = str(prices[1])[len(str(prices[1]))-2] + str(prices[1])[len(str(prices[1]))-1]
+            px,py = draw.textsize(dollar,font=dollar_font)
+            #paste in the tag
             small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
             #add the text here
+            #first the name
+            for line in range(0,len(name)):
+                draw.text((((small_tag_count%5)*449)+103,(small_curr_row*335)+458+(30*line)),name[line],font=small_font,fill=(0,0,0,255))
+            #now the dollar
+            draw.text((((small_tag_count%5)*449)+458-px,(small_curr_row*335)+478),dollar,font=dollar_font,fill=(0,0,0,255))
+            #now the cents
+            draw.text((((small_tag_count%5)*449)+458,(small_curr_row*335)+478),cents,font=cent_font,fill=(0,0,0,255))
+            #next, the sku
+            draw.text((((small_tag_count%5)*449)+418,(small_curr_row*335)+568),str(text[1]),font=sku_font,fill=(0,0,0,255))
+
+            #adjust row position
             if small_tag_count%5 == 4:
                 small_curr_row += 1
             small_tag_count +=1
-            #small_canvas.show()
-
-            #check to see if we've filled a page goes here
-
     if quantities[1] > 0:
         #generate small sale tags
         print "generating small sale tags"
