@@ -6,16 +6,22 @@
 ############################################
 # Current Tag Info                         #
 # tags are to be printed through the image #
-# editor of choice, with the fit option    #
-# chosen and margins set to 0.17           #
+# editor of choice, with the actual size   #
+# option chosen and margins set to 0.17    #
 # dpi should be 300                        #
+#                                          #
+# SMALL TAG INFO:                          #
+#                                          #
 # small tag size in px: (449,331)          #
 # small tag offsets in px: (93,258)        #
 # small tag text offset: add (10,200) to xy#
 # small tag char count: 15 uppr/17  lowr   #
 # small tag max lines: 4                   #
 # # of small tags per col/row: (5,8)       #
-# big tag info to be determined            #
+#                                          #
+# BIG TAG INFO:                            #
+#                                          #
+# big tag size in px: (1051,602)           #
 ############################################
 
 import xlrd, sys
@@ -23,7 +29,9 @@ from PIL import Image, ImageFont, ImageDraw
 
 #set up the global canvas/draw space/fonts and number of each tag generated
 small_canvas = Image.new("RGB",(2430,3008),(150,150,255))
+big_canvas = Image.new("RGB",(2430,3108),(255,150,150))
 draw = ImageDraw.Draw(small_canvas)
+b_draw = ImageDraw.Draw(big_canvas)
 small_font = ImageFont.truetype("MyriadPro-Cond.ttf",35)
 sku_font = ImageFont.truetype("MyriadPro-Cond.ttf",20)
 dollar_font = ImageFont.truetype("MyriadPro-Cond.ttf",85)
@@ -61,7 +69,9 @@ parts_page_count = 0
 ############################################
 def add_tag_to_canvas(prices,text,quantities):
     global small_canvas
+    global big_canvas
     global draw
+    global b_draw
     global small_font
     global small_tag_count
     global small_curr_row
@@ -140,7 +150,7 @@ def add_tag_to_canvas(prices,text,quantities):
             #next, the sku
             draw.text((((small_tag_count%5)*449)+418,(small_curr_row*335)+568),str(text[1]),font=sku_font,fill=(255,255,255,255))
             #since its a sale tag, add the word "sale"
-            draw.text((((small_tag_count%5)*449)+438-px,(small_curr_row*335)+438),"Sale",font=extra_font,fill=(255,255,255,255))
+            draw.text((((small_tag_count%5)*449)+410,(small_curr_row*335)+438),"Sale",font=extra_font,fill=(255,255,255,255))
 
             #adjust row position
             if small_tag_count%5 == 4:
@@ -163,7 +173,18 @@ def add_tag_to_canvas(prices,text,quantities):
     if quantities[3] > 0:
         #generate small normal tags
         print "generating large normal tags"
-        tag = Image.open("images/big/bbase.png")
+        tag = Image.open("images/big/bsale.png")
+        big_canvas.paste(tag, ((1051*0)+160,(595*0)+105))
+        big_canvas.paste(tag, ((1051*0)+160,(595*1)+105))
+        big_canvas.paste(tag, ((1051*0)+160,(595*2)+105))
+        big_canvas.paste(tag, ((1051*0)+160,(595*3)+105))
+        big_canvas.paste(tag, ((1051*0)+160,(595*4)+105))
+        big_canvas.paste(tag, ((1051*1)+160,(595*0)+105))
+        big_canvas.paste(tag, ((1051*1)+160,(595*1)+105))
+        big_canvas.paste(tag, ((1051*1)+160,(595*2)+105))
+        big_canvas.paste(tag, ((1051*1)+160,(595*3)+105))
+        big_canvas.paste(tag, ((1051*1)+160,(595*4)+105))
+        big_canvas.save("test.png","PNG",dpi=(300,300))
     if quantities[4] > 0:
         #generate small sale tags
         print "generating large sale tags"
