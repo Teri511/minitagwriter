@@ -25,8 +25,10 @@ from PIL import Image, ImageFont, ImageDraw
 small_canvas = Image.new("RGB",(2430,3008),(150,150,255))
 draw = ImageDraw.Draw(small_canvas)
 small_font = ImageFont.truetype("MyriadPro-Cond.ttf",35)
-dollar_font = ImageFont.truetype("MyriadPro-Cond.ttf",90)
-cent_font = ImageFont.truetype("MyriadPro-Cond.ttf",45)
+sku_font = ImageFont.truetype("MyriadPro-Cond.ttf",20)
+dollar_font = ImageFont.truetype("MyriadPro-Cond.ttf",85)
+cent_font = ImageFont.truetype("MyriadPro-Cond.ttf",40)
+extra_font = ImageFont.truetype("MyriadPro-Cond.ttf",65)
 small_tag_count = 0
 small_curr_row = 0
 small_page_count = 0
@@ -63,6 +65,7 @@ def add_tag_to_canvas(prices,text,quantities):
     global small_font
     global small_tag_count
     global small_curr_row
+    global small_page_count
 
     #for each quantity, generate that many tags
     if quantities[0] > 0:
@@ -83,27 +86,44 @@ def add_tag_to_canvas(prices,text,quantities):
         #generate small sale tags
         print "generating small sale tags"
         tag = Image.open("images/small/ssale.png")
+        name = str(text[0]).split("/")
         for count in range(0,quantities[1]):
+            #check to see if we've filled a page
+            if small_tag_count > 39:
+                #dump the current canvas to a file and start a new one
+                small_canvas.save("output/small page "+ str(small_page_count) + ".png","PNG",dpi=(300,300))
+                small_tag_count = 0
+                small_curr_row = 0
+                small_page_count += 1
+                small_canvas = Image.new("RGB",(2430,3008),(150,150,255))
+                draw = ImageDraw.Draw(small_canvas)
             #split the string using evil casting magic
             dollar = str(int(prices[1]))
             #I'm so sorry
+            #take the price, convert it to a string and take the last 2 chars from it, these will always be the cents
             cents = str(prices[1])[len(str(prices[1]))-2] + str(prices[1])[len(str(prices[1]))-1]
             px,py = draw.textsize(dollar,font=dollar_font)
             #paste in the tag
             small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
             #add the text here
             #first the name
-            draw.text((((small_tag_count%5)*449)+103,(small_curr_row*335)+458),str(text[0]),font=small_font,fill=(0,0,0,255))
+            for line in range(0,len(name)):
+                draw.text((((small_tag_count%5)*449)+103,(small_curr_row*335)+458+(30*line)),name[line],font=small_font,fill=(0,0,0,255))
             #now the dollar
-            draw.text((((small_tag_count%5)*449)+458-px,(small_curr_row*335)+488),dollar,font=dollar_font,fill=(255,255,255,255))
+            draw.text((((small_tag_count%5)*449)+458-px,(small_curr_row*335)+498),dollar,font=dollar_font,fill=(255,255,255,255))
             #now the cents
-            draw.text((((small_tag_count%5)*449)+458,(small_curr_row*335)+488),cents,font=cent_font,fill=(255,255,255,255))
+            draw.text((((small_tag_count%5)*449)+458,(small_curr_row*335)+498),cents,font=cent_font,fill=(255,255,255,255))
+            #next, the sku
+            draw.text((((small_tag_count%5)*449)+418,(small_curr_row*335)+568),str(text[1]),font=sku_font,fill=(255,255,255,255))
+            #since its a sale tag, add the word "sale"
+            draw.text((((small_tag_count%5)*449)+438-px,(small_curr_row*335)+438),"Sale",font=extra_font,fill=(255,255,255,255))
 
+            #adjust row position
             if small_tag_count%5 == 4:
                 small_curr_row += 1
             small_tag_count +=1
-            #small_canvas.show()
-            #check to see if we've filled a page goes here
+
+
     if quantities[2] > 0:
         #generate small clear tags
         print "generating small clear tags"
@@ -131,7 +151,7 @@ def add_tag_to_canvas(prices,text,quantities):
     if quantities[6] > 0:
         #generate parts tags
         print "generating parts tags"
-    small_canvas.save("test.png","PNG",dpi=(300,300))
+    small_canvas.save("output/small page "+str(small_page_count)+".png","PNG",dpi=(300,300))
 
 ###################################################
 #start of
