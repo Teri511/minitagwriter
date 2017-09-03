@@ -25,6 +25,8 @@ from PIL import Image, ImageFont, ImageDraw
 small_canvas = Image.new("RGB",(2430,3008),(150,150,255))
 draw = ImageDraw.Draw(small_canvas)
 small_font = ImageFont.truetype("MyriadPro-Cond.ttf",35)
+dollar_font = ImageFont.truetype("MyriadPro-Cond.ttf",90)
+cent_font = ImageFont.truetype("MyriadPro-Cond.ttf",45)
 small_tag_count = 0
 small_curr_row = 0
 small_page_count = 0
@@ -69,11 +71,12 @@ def add_tag_to_canvas(prices,text,quantities):
         tag = Image.open("images/small/sbase.png")
         for count in range(0,quantities[0]):
             small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
+            #add the text here
             if small_tag_count%5 == 4:
                 small_curr_row += 1
             small_tag_count +=1
             #small_canvas.show()
-            #add the text here
+
             #check to see if we've filled a page goes here
 
     if quantities[1] > 0:
@@ -81,12 +84,25 @@ def add_tag_to_canvas(prices,text,quantities):
         print "generating small sale tags"
         tag = Image.open("images/small/ssale.png")
         for count in range(0,quantities[1]):
+            #split the string using evil casting magic
+            dollar = str(int(prices[1]))
+            #I'm so sorry
+            cents = str(prices[1])[len(str(prices[1]))-2] + str(prices[1])[len(str(prices[1]))-1]
+            px,py = draw.textsize(dollar,font=dollar_font)
+            #paste in the tag
             small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
+            #add the text here
+            #first the name
+            draw.text((((small_tag_count%5)*449)+103,(small_curr_row*335)+458),str(text[0]),font=small_font,fill=(0,0,0,255))
+            #now the dollar
+            draw.text((((small_tag_count%5)*449)+458-px,(small_curr_row*335)+488),dollar,font=dollar_font,fill=(255,255,255,255))
+            #now the cents
+            draw.text((((small_tag_count%5)*449)+458,(small_curr_row*335)+488),cents,font=cent_font,fill=(255,255,255,255))
+
             if small_tag_count%5 == 4:
                 small_curr_row += 1
             small_tag_count +=1
             #small_canvas.show()
-            #add the text here
             #check to see if we've filled a page goes here
     if quantities[2] > 0:
         #generate small clear tags
@@ -94,11 +110,11 @@ def add_tag_to_canvas(prices,text,quantities):
         tag = Image.open("images/small/sclear.png")
         for count in range(0,quantities[1]):
             small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
+            #add the text here
             if small_tag_count%5 == 4:
                 small_curr_row += 1
             small_tag_count +=1
             #small_canvas.show()
-            #add the text here
             #check to see if we've filled a page goes here
     if quantities[3] > 0:
         #generate small normal tags
