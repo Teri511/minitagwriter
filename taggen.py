@@ -22,6 +22,9 @@
 # BIG TAG INFO:                            #
 #                                          #
 # big tag size in px: (1051,602)           #
+# big tag offsets in px: (160,107)         #
+# big tag header offset in px: (200,150)   #
+# big tag header char count:
 ############################################
 
 import xlrd, sys
@@ -36,6 +39,8 @@ small_font = ImageFont.truetype("MyriadPro-Cond.ttf",35)
 sku_font = ImageFont.truetype("MyriadPro-Cond.ttf",20)
 dollar_font = ImageFont.truetype("MyriadPro-Cond.ttf",85)
 cent_font = ImageFont.truetype("MyriadPro-Cond.ttf",40)
+b_dollar_font = ImageFont.truetype("MyriadPro-Cond.ttf",220)
+b_cent_font = ImageFont.truetype("MyriadPro-Cond.ttf",110)
 extra_font = ImageFont.truetype("MyriadPro-Cond.ttf",65)
 small_tag_count = 0
 small_curr_row = 0
@@ -173,22 +178,39 @@ def add_tag_to_canvas(prices,text,quantities):
     if quantities[3] > 0:
         #generate small normal tags
         print "generating large normal tags"
-        tag = Image.open("images/big/bsale.png")
-        big_canvas.paste(tag, ((1051*0)+160,(595*0)+105))
-        big_canvas.paste(tag, ((1051*0)+160,(595*1)+105))
-        big_canvas.paste(tag, ((1051*0)+160,(595*2)+105))
-        big_canvas.paste(tag, ((1051*0)+160,(595*3)+105))
-        big_canvas.paste(tag, ((1051*0)+160,(595*4)+105))
-        big_canvas.paste(tag, ((1051*1)+160,(595*0)+105))
-        big_canvas.paste(tag, ((1051*1)+160,(595*1)+105))
-        big_canvas.paste(tag, ((1051*1)+160,(595*2)+105))
-        big_canvas.paste(tag, ((1051*1)+160,(595*3)+105))
-        big_canvas.paste(tag, ((1051*1)+160,(595*4)+105))
+        tag = Image.open("images/big/bbase.png")
+        big_canvas.paste(tag, ((1051*0)+160,(600*0)+107))
+        b_draw.text((200,150),"ABCDEFGHIJKLMNOP\nABCDEFGHIJKLMNOP",font=dollar_font,fill=(0,0,0,255))
+        b_draw.text((825,300),"999",font=b_dollar_font,fill=(0,0,0,255))
+        b_draw.text((1075,300),"99",font=b_cent_font,fill=(0,0,0,255))
+        #big_canvas.paste(tag, ((1051*0)+160,(600*1)+107))
+        #big_canvas.paste(tag, ((1051*0)+160,(600*2)+107))
+        #big_canvas.paste(tag, ((1051*0)+160,(600*3)+107))
+        #big_canvas.paste(tag, ((1051*0)+160,(600*4)+107))
+        #big_canvas.paste(tag, ((1051*1)+160,(600*0)+107))
+        #big_canvas.paste(tag, ((1051*1)+160,(600*1)+107))
+        #big_canvas.paste(tag, ((1051*1)+160,(600*2)+107))
+        #big_canvas.paste(tag, ((1051*1)+160,(600*3)+107))
+        #big_canvas.paste(tag, ((1051*1)+160,(600*4)+107))
         big_canvas.save("test.png","PNG",dpi=(300,300))
     if quantities[4] > 0:
         #generate small sale tags
         print "generating large sale tags"
         tag = Image.open("images/big/bsale.png")
+        big_canvas.paste(tag, ((1051*0)+160,(600*0)+107))
+        b_draw.text((200,150),"ABCDEFGHIJKLMNOP\nABCDEFGHIJKLMNOP",font=dollar_font,fill=(0,0,0,255))
+        b_draw.text((825,300),"999",font=b_dollar_font,fill=(255,255,255,255))
+        b_draw.text((1075,300),"99",font=b_cent_font,fill=(255,255,255,255))
+        #big_canvas.paste(tag, ((1051*0)+160,(600*1)+107))
+        #big_canvas.paste(tag, ((1051*0)+160,(600*2)+107))
+        #big_canvas.paste(tag, ((1051*0)+160,(600*3)+107))
+        #big_canvas.paste(tag, ((1051*0)+160,(600*4)+107))
+        #big_canvas.paste(tag, ((1051*1)+160,(600*0)+107))
+        #big_canvas.paste(tag, ((1051*1)+160,(600*1)+107))
+        #big_canvas.paste(tag, ((1051*1)+160,(600*2)+107))
+        #big_canvas.paste(tag, ((1051*1)+160,(600*3)+107))
+        #big_canvas.paste(tag, ((1051*1)+160,(600*4)+107))
+        big_canvas.save("test.png","PNG",dpi=(300,300))
     if quantities[5] > 0:
         #generate small clear tags
         print "generating large clear tags"
