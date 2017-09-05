@@ -42,6 +42,7 @@ cent_font = ImageFont.truetype("MyriadPro-Cond.ttf",40)
 b_dollar_font = ImageFont.truetype("MyriadPro-Cond.ttf",220)
 b_cent_font = ImageFont.truetype("MyriadPro-Cond.ttf",110)
 extra_font = ImageFont.truetype("MyriadPro-Cond.ttf",65)
+b_extra_font = ImageFont.truetype("MyriadPro-Cond.ttf",190)
 small_tag_count = 0
 small_curr_row = 0
 small_page_count = 0
@@ -101,10 +102,10 @@ def add_tag_to_canvas(prices,text,quantities):
                 small_canvas = Image.new("RGB",(2430,3008),(150,150,255))
                 draw = ImageDraw.Draw(small_canvas)
             #split the string using evil casting magic
-            dollar = str(int(prices[1]))
+            dollar = str(int(prices[0]))
             #I'm so sorry
             #take the price, convert it to a string and take the last 2 chars from it, these will always be the cents
-            cents = str(prices[1])[len(str(prices[1]))-2] + str(prices[1])[len(str(prices[1]))-1]
+            cents = str(prices[0])[len(str(prices[0]))-2] + str(prices[0])[len(str(prices[0]))-1]
             px,py = draw.textsize(dollar,font=dollar_font)
             #paste in the tag
             small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
@@ -178,9 +179,49 @@ def add_tag_to_canvas(prices,text,quantities):
             #small_canvas.show()
             #check to see if we've filled a page goes here
     if quantities[3] > 0:
-        #generate small normal tags
+        #generate large normal tags
         print "generating large normal tags"
         tag = Image.open("images/big/bbase.png")
+
+        name = str(text[0]).split("/")
+        for count in range(0,quantities[3]):
+            #check to see if we've filled a page
+            if big_tag_count > 9:
+                #dump the current canvas to a file and start a new one
+                big_canvas.save("output/big page "+ str(big_page_count) + ".png","PNG",dpi=(300,300))
+                big_tag_count = 0
+                big_curr_row = 0
+                big_page_count += 1
+                big_canvas = Image.new("RGB",(2430,3008),(150,150,255))
+                b_draw = ImageDraw.Draw(big_canvas)
+            #split the string using evil casting magic
+            dollar = str(int(prices[0]))
+            #I'm so sorry
+            #take the price, convert it to a string and take the last 2 chars from it, these will always be the cents
+            cents = str(prices[0])[len(str(prices[0]))-2] + str(prices[0])[len(str(prices[0]))-1]
+            px,py = b_draw.textsize(dollar,font=b_dollar_font)
+            #paste in the tag
+            big_canvas.paste(tag, (((big_tag_count%2)*1051)+160,(big_curr_row*600)+107))
+            #add the text here
+            #first the name
+            for line in range(0,len(name)):
+                b_draw.text((((big_tag_count%2)*1051)+200,(big_curr_row*600)+150+(70*line)),name[line],font=dollar_font,fill=(0,0,0,255))
+            #now the dollar
+            b_draw.text((((big_tag_count%2)*1051)+1075-px,(big_curr_row*600)+300),dollar,font=b_dollar_font,fill=(0,0,0,255))
+            #now the cents
+            b_draw.text((((big_tag_count%2)*1051)+1075,(big_curr_row*600)+300),cents,font=b_cent_font,fill=(0,0,0,255))
+            #next, the sku
+            b_draw.text((((big_tag_count%2)*1051)+925,(big_curr_row*600)+600),str(text[1]),font=cent_font,fill=(0,0,0,255))
+
+            #adjust row position
+            if big_tag_count%2 == 1:
+                big_curr_row += 1
+            big_tag_count +=1
+        big_canvas.save("output/big page "+ str(big_page_count) + ".png","PNG",dpi=(300,300))
+    if quantities[4] > 0:
+        #generate large sale tags
+        print "generating large sale tags"
+        tag = Image.open("images/big/bsale.png")
 
         name = str(text[0]).split("/")
         for count in range(0,quantities[3]):
@@ -206,35 +247,19 @@ def add_tag_to_canvas(prices,text,quantities):
             for line in range(0,len(name)):
                 b_draw.text((((big_tag_count%2)*1051)+200,(big_curr_row*600)+150+(70*line)),name[line],font=dollar_font,fill=(0,0,0,255))
             #now the dollar
-            b_draw.text((((big_tag_count%2)*1051)+1075-px,(big_curr_row*600)+300),dollar,font=b_dollar_font,fill=(0,0,0,255))
+            b_draw.text((((big_tag_count%2)*1051)+1075-px,(big_curr_row*600)+325),dollar,font=b_dollar_font,fill=(255,255,255,255))
             #now the cents
-            b_draw.text((((big_tag_count%2)*1051)+1075,(big_curr_row*600)+300),cents,font=b_cent_font,fill=(0,0,0,255))
+            b_draw.text((((big_tag_count%2)*1051)+1075,(big_curr_row*600)+325),cents,font=b_cent_font,fill=(255,255,255,255))
             #next, the sku
-            b_draw.text((((big_tag_count%2)*1051)+925,(big_curr_row*600)+600),str(text[1]),font=cent_font,fill=(0,0,0,255))
+            b_draw.text((((big_tag_count%2)*1051)+925,(big_curr_row*600)+600),str(text[1]),font=cent_font,fill=(255,255,255,255))
+            #since its a sale tag, add the word "sale"
+            b_draw.text((((big_tag_count%2)*1051)+885,(big_curr_row*600)+150),"Sale",font=b_extra_font,fill=(255,255,255,255))
 
             #adjust row position
             if big_tag_count%2 == 1:
                 big_curr_row += 1
             big_tag_count +=1
         big_canvas.save("output/big page "+ str(big_page_count) + ".png","PNG",dpi=(300,300))
-    if quantities[4] > 0:
-        #generate small sale tags
-        print "generating large sale tags"
-        tag = Image.open("images/big/bsale.png")
-        big_canvas.paste(tag, ((1051*0)+160,(600*0)+107))
-        b_draw.text((200,150),"ABCDEFGHIJKLMNOP\nABCDEFGHIJKLMNOP",font=dollar_font,fill=(0,0,0,255))
-        b_draw.text((825,300),"999",font=b_dollar_font,fill=(255,255,255,255))
-        b_draw.text((1075,300),"99",font=b_cent_font,fill=(255,255,255,255))
-        #big_canvas.paste(tag, ((1051*0)+160,(600*1)+107))
-        #big_canvas.paste(tag, ((1051*0)+160,(600*2)+107))
-        #big_canvas.paste(tag, ((1051*0)+160,(600*3)+107))
-        #big_canvas.paste(tag, ((1051*0)+160,(600*4)+107))
-        #big_canvas.paste(tag, ((1051*1)+160,(600*0)+107))
-        #big_canvas.paste(tag, ((1051*1)+160,(600*1)+107))
-        #big_canvas.paste(tag, ((1051*1)+160,(600*2)+107))
-        #big_canvas.paste(tag, ((1051*1)+160,(600*3)+107))
-        #big_canvas.paste(tag, ((1051*1)+160,(600*4)+107))
-        big_canvas.save("test.png","PNG",dpi=(300,300))
     if quantities[5] > 0:
         #generate small clear tags
         print "generating large clear tags"
