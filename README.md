@@ -1,9 +1,9 @@
 # minitagwriter
-A quick and dirty tag making script
+A quick and dirty tag making script to replace the ancient RadioShack Tag Wiz software.
+Can be used to generate small and large tags for your friendly local RadioShack shop
 
 requires the following python libraries: Pillow/xlrd
 
-can generate regular price and sale tags for the RadioShack style tag set
+Instructions: Run the script via Python in a terminal/via command line with an Excel spreadsheet as its only argument
 
-run via python command-line with the Microsoft Excel file as the only argument
-i.e: python taggen.py name_of_file.xlsx
+The ordering of the tag information is contained in the example Excel file "demo.xlsx"
