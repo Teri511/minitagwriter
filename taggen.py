@@ -27,7 +27,7 @@
 # big tag header char count:
 ############################################
 
-import xlrd, sys
+import xlrd, sys, os
 from PIL import Image, ImageFont, ImageDraw
 
 #set up the global canvas/draw space/fonts and number of each tag generated
@@ -90,7 +90,7 @@ def add_tag_to_canvas(prices,text,quantities):
         #generate small normal tags
         print "generating small normal tags"
         tag = Image.open("images/small/sbase.png")
-        name = str(text[0]).split("/")
+        name = str(text[0]).split("?")
         for count in range(0,quantities[1]):
             #check to see if we've filled a page
             if small_tag_count > 39:
@@ -106,6 +106,9 @@ def add_tag_to_canvas(prices,text,quantities):
             #I'm so sorry
             #take the price, convert it to a string and take the last 2 chars from it, these will always be the cents
             cents = str(prices[0])[len(str(prices[0]))-2] + str(prices[0])[len(str(prices[0]))-1]
+            #hacky check to get rid of the "no cent" bug
+            if cents[0] == ".":
+                cents="00"
             px,py = draw.textsize(dollar,font=dollar_font)
             #paste in the tag
             small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
@@ -128,7 +131,7 @@ def add_tag_to_canvas(prices,text,quantities):
         #generate small sale tags
         print "generating small sale tags"
         tag = Image.open("images/small/ssale.png")
-        name = str(text[0]).split("/")
+        name = str(text[0]).split("?")
         for count in range(0,quantities[1]):
             #check to see if we've filled a page
             if small_tag_count > 39:
@@ -144,6 +147,9 @@ def add_tag_to_canvas(prices,text,quantities):
             #I'm so sorry
             #take the price, convert it to a string and take the last 2 chars from it, these will always be the cents
             cents = str(prices[1])[len(str(prices[1]))-2] + str(prices[1])[len(str(prices[1]))-1]
+            #hacky check to get rid of the "no cent" bug
+            if cents[0] == ".":
+                cents="00"
             px,py = draw.textsize(dollar,font=dollar_font)
             #paste in the tag
             small_canvas.paste(tag, (((small_tag_count%5)*449)+93,(small_curr_row*335)+258))
@@ -183,7 +189,7 @@ def add_tag_to_canvas(prices,text,quantities):
         print "generating large normal tags"
         tag = Image.open("images/big/bbase.png")
 
-        name = str(text[0]).split("/")
+        name = str(text[0]).split("?")
         for count in range(0,quantities[3]):
             #check to see if we've filled a page
             if big_tag_count > 9:
@@ -199,6 +205,9 @@ def add_tag_to_canvas(prices,text,quantities):
             #I'm so sorry
             #take the price, convert it to a string and take the last 2 chars from it, these will always be the cents
             cents = str(prices[0])[len(str(prices[0]))-2] + str(prices[0])[len(str(prices[0]))-1]
+            #hacky check to get rid of the "no cent" bug
+            if cents[0] == ".":
+                cents="00"
             px,py = b_draw.textsize(dollar,font=b_dollar_font)
             #paste in the tag
             big_canvas.paste(tag, (((big_tag_count%2)*1051)+160,(big_curr_row*600)+107))
@@ -223,7 +232,7 @@ def add_tag_to_canvas(prices,text,quantities):
         print "generating large sale tags"
         tag = Image.open("images/big/bsale.png")
 
-        name = str(text[0]).split("/")
+        name = str(text[0]).split("?")
         for count in range(0,quantities[3]):
             #check to see if we've filled a page
             if big_tag_count > 9:
@@ -239,6 +248,9 @@ def add_tag_to_canvas(prices,text,quantities):
             #I'm so sorry
             #take the price, convert it to a string and take the last 2 chars from it, these will always be the cents
             cents = str(prices[1])[len(str(prices[1]))-2] + str(prices[1])[len(str(prices[1]))-1]
+            #hacky check to get rid of the "no cent" bug
+            if cents[0] == ".":
+                cents="00"
             px,py = b_draw.textsize(dollar,font=b_dollar_font)
             #paste in the tag
             big_canvas.paste(tag, (((big_tag_count%2)*1051)+160,(big_curr_row*600)+107))
@@ -270,10 +282,11 @@ def add_tag_to_canvas(prices,text,quantities):
     small_canvas.save("output/small page "+str(small_page_count)+".png","PNG",dpi=(300,300))
 
 ###################################################
-#start of
+#start of Tag genning script
 
 if len(sys.argv) == 2:
-
+    need_big = 0
+    need_small = 0
     #open up the excel file and get the first sheet
     #NOTE: the columns in the sheet only exist up until the farthest filled cell, same goes for rows
     #so if you only have data in cell 0,0 you can't ask for cell 1,1. However if you have data in cell 0,0 and 10,10
@@ -287,10 +300,18 @@ if len(sys.argv) == 2:
         if sheet.cell_value(row,0) != '':
             #check for valid data across the row
             #pull the info and pass to the tag maker routine
+            #and mark if we need to tell the user to grab sheets of big/small/parts tag paper
+            #yes I know this is bad, I'll fix it later
+            if int(sheet.cell_value(row,5)) > 0 or int(sheet.cell_value(row,6)) > 0 or int(sheet.cell_value(row,7)) > 0:
+                need_small = 1;
+            if int(sheet.cell_value(row,8)) > 0 or int(sheet.cell_value(row,9)) > 0 or int(sheet.cell_value(row,10)) > 0:
+                need_big = 1;
             nprices = (sheet.cell_value(row,3),sheet.cell_value(row,4))
             ntext = (sheet.cell_value(row,1),sheet.cell_value(row,0),sheet.cell_value(row,2))
             nquantities = (int(sheet.cell_value(row,5)),int(sheet.cell_value(row,6)),int(sheet.cell_value(row,7)),int(sheet.cell_value(row,8)),int(sheet.cell_value(row,9)),int(sheet.cell_value(row,10)),int(sheet.cell_value(row,11)))
             print "genning row " + str(row)
             add_tag_to_canvas(nprices,ntext,nquantities)
+    print "You need to grab " + str(small_page_count+need_small) + " small tag sheets and " + str(big_page_count+need_big) + " large tag sheets"
+    raw_input("Press Enter to continue...")
 else:
     print "incorrect number of arguments"
