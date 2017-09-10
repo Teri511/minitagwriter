@@ -293,7 +293,7 @@ if len(sys.argv) == 2:
     #you can ask for data all the way up to 10,10 and just get nulls
     book = xlrd.open_workbook(filename=sys.argv[1])
     sheet = book.sheet_by_index(0)
-    db_book = xlrd.open_workbook("item catalog.xlsx")
+    db_book = xlrd.open_workbook("catalog.xlsx")
     db_sheet = db_book.sheet_by_index(0)
 
     catalog = {}
