@@ -284,7 +284,7 @@ def add_tag_to_canvas(prices,text,quantities):
 ###################################################
 #start of Tag genning script
 
-if len(sys.argv) == 2:
+if len(sys.argv) == 3:
     need_big = 0
     need_small = 0
     #open up the excel file and get the first sheet
@@ -293,7 +293,7 @@ if len(sys.argv) == 2:
     #you can ask for data all the way up to 10,10 and just get nulls
     book = xlrd.open_workbook(filename=sys.argv[1])
     sheet = book.sheet_by_index(0)
-    db_book = xlrd.open_workbook("catalog.xlsx")
+    db_book = xlrd.open_workbook(filename=sys.argv[2])
     db_sheet = db_book.sheet_by_index(0)
 
     catalog = {}
