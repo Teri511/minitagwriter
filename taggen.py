@@ -121,12 +121,14 @@ def add_tag_to_canvas(prices,text,quantities):
             #now the cents
             draw.text((((small_tag_count%5)*449)+458,(small_curr_row*335)+463),cents,font=cent_font,fill=(0,0,0,255))
             #next, the sku
-            draw.text((((small_tag_count%5)*449)+398,(small_curr_row*335)+548),str(text[1])[0:3]+"-"+str(text[1])[2:6],font=sku_font,fill=(0,0,0,255))
+            draw.text((((small_tag_count%5)*449)+393,(small_curr_row*335)+548),str(text[1])[0:3]+"-"+str(text[1])[2:6],font=sku_font,fill=(0,0,0,255))
+
 
             #adjust row position
             if small_tag_count%5 == 4:
                 small_curr_row += 1
             small_tag_count +=1
+        small_canvas.save("output/small page "+str(small_page_count)+".png","PNG",dpi=(300,300))
     if quantities[1] > 0:
         #generate small sale tags
         print "generating small sale tags"
@@ -162,16 +164,16 @@ def add_tag_to_canvas(prices,text,quantities):
             #now the cents
             draw.text((((small_tag_count%5)*449)+458,(small_curr_row*335)+483),cents,font=cent_font,fill=(255,255,255,255))
             #next, the sku
-            draw.text((((small_tag_count%5)*449)+398,(small_curr_row*335)+548),str(text[1])[0:3]+"-"+str(text[1])[2:6],font=sku_font,fill=(255,255,255,255))
+            draw.text((((small_tag_count%5)*449)+393,(small_curr_row*335)+548),str(text[1])[0:3]+"-"+str(text[1])[2:6],font=sku_font,fill=(255,255,255,255))
             #since its a sale tag, add the word "sale"
             draw.text((((small_tag_count%5)*449)+410,(small_curr_row*335)+438),"Sale",font=extra_font,fill=(255,255,255,255))
+            #and now: the reg price
 
             #adjust row position
             if small_tag_count%5 == 4:
                 small_curr_row += 1
             small_tag_count +=1
-
-
+        small_canvas.save("output/small page "+str(small_page_count)+".png","PNG",dpi=(300,300))
     if quantities[2] > 0:
         #generate small clear tags
         print "generating small clear tags"
@@ -279,7 +281,8 @@ def add_tag_to_canvas(prices,text,quantities):
     if quantities[6] > 0:
         #generate parts tags
         print "generating parts tags"
-    small_canvas.save("output/small page "+str(small_page_count)+".png","PNG",dpi=(300,300))
+
+
 
 ###################################################
 #start of Tag genning script
