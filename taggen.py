@@ -121,7 +121,7 @@ def add_tag_to_canvas(prices,text,quantities):
             #now the cents
             draw.text((((small_tag_count%5)*449)+458,(small_curr_row*335)+463),cents,font=cent_font,fill=(0,0,0,255))
             #next, the sku
-            draw.text((((small_tag_count%5)*449)+393,(small_curr_row*335)+548),str(text[1])[0:3]+"-"+str(text[1])[2:6],font=sku_font,fill=(0,0,0,255))
+            draw.text((((small_tag_count%5)*449)+393,(small_curr_row*335)+548),str(text[1])[0:3]+"-"+str(text[1])[3:],font=sku_font,fill=(0,0,0,255))
 
 
             #adjust row position
@@ -164,7 +164,7 @@ def add_tag_to_canvas(prices,text,quantities):
             #now the cents
             draw.text((((small_tag_count%5)*449)+458,(small_curr_row*335)+483),cents,font=cent_font,fill=(255,255,255,255))
             #next, the sku
-            draw.text((((small_tag_count%5)*449)+393,(small_curr_row*335)+548),str(text[1])[0:3]+"-"+str(text[1])[2:6],font=sku_font,fill=(255,255,255,255))
+            draw.text((((small_tag_count%5)*449)+393,(small_curr_row*335)+548),str(text[1])[0:3]+"-"+str(text[1])[3:],font=sku_font,fill=(255,255,255,255))
             #since its a sale tag, add the word "sale"
             draw.text((((small_tag_count%5)*449)+410,(small_curr_row*335)+438),"Sale",font=extra_font,fill=(255,255,255,255))
             #and now: the reg price
@@ -222,7 +222,7 @@ def add_tag_to_canvas(prices,text,quantities):
             #now the cents
             b_draw.text((((big_tag_count%2)*1051)+1075,(big_curr_row*600)+300),cents,font=b_cent_font,fill=(0,0,0,255))
             #next, the sku
-            b_draw.text((((big_tag_count%2)*1051)+925,(big_curr_row*600)+600),str(text[1])[0:3]+"-"+str(text[1])[2:6],font=cent_font,fill=(0,0,0,255))
+            b_draw.text((((big_tag_count%2)*1051)+925,(big_curr_row*600)+600),str(text[1])[0:3]+"-"+str(text[1])[3:],font=cent_font,fill=(0,0,0,255))
 
             #adjust row position
             if big_tag_count%2 == 1:
@@ -265,7 +265,7 @@ def add_tag_to_canvas(prices,text,quantities):
             #now the cents
             b_draw.text((((big_tag_count%2)*1051)+1075,(big_curr_row*600)+325),cents,font=b_cent_font,fill=(255,255,255,255))
             #next, the sku
-            b_draw.text((((big_tag_count%2)*1051)+925,(big_curr_row*600)+600),str(text[1])[0:3]+"-"+str(text[1])[2:6],font=cent_font,fill=(255,255,255,255))
+            b_draw.text((((big_tag_count%2)*1051)+925,(big_curr_row*600)+600),str(text[1])[0:3]+"-"+str(text[1])[3:],font=cent_font,fill=(255,255,255,255))
             #since its a sale tag, add the word "sale"
             b_draw.text((((big_tag_count%2)*1051)+885,(big_curr_row*600)+150),"Sale",font=b_extra_font,fill=(255,255,255,255))
 
@@ -305,7 +305,7 @@ if len(sys.argv) == 3:
     for sku in range(1,db_sheet.nrows):
         #more error checking here
         #print "adding sku: " + str(db_sheet.cell_value(sku,0))
-        catalog[db_sheet.cell_value(sku,0)] = [str(db_sheet.cell_value(sku,1)),str(db_sheet.cell_value(sku,2)),db_sheet.cell_value(sku,3)]
+        catalog[db_sheet.cell_value(sku,0)] = [str(db_sheet.cell_value(sku,1)),str(db_sheet.cell_value(sku,2)),db_sheet.cell_value(sku,3),db_sheet.cell_value(sku,4)]
 
     #loop across each row
     for row in range(1,sheet.nrows):
@@ -313,7 +313,7 @@ if len(sys.argv) == 3:
         if sheet.cell_value(row,0) != '':
             #error checking goes here
             #find the sku in the catalog and pull its info
-            #info goes: name,description,normal price
+            #info goes: name,description,normal price,sale price
             if str(sheet.cell_value(row,0))[3]=="-":
                 temp = int(str(sheet.cell_value(row,0))[0:3] + str(sheet.cell_value(row,0))[4:])
             else:
@@ -324,9 +324,9 @@ if len(sys.argv) == 3:
                 need_small = 1;
             if int(sheet.cell_value(row,5)) > 0 or int(sheet.cell_value(row,6)) > 0 or int(sheet.cell_value(row,7)) > 0:
                 need_big = 1;
-            nprices = (info[2],sheet.cell_value(row,1))
+            nprices = (info[2],info[3])
             ntext = (info[0],int(temp),info[1])
-            nquantities = (int(sheet.cell_value(row,2)),int(sheet.cell_value(row,3)),int(sheet.cell_value(row,4)),int(sheet.cell_value(row,5)),int(sheet.cell_value(row,6)),int(sheet.cell_value(row,7)),int(sheet.cell_value(row,8)))
+            nquantities = (int(sheet.cell_value(row,1)),int(sheet.cell_value(row,2)),int(sheet.cell_value(row,3)),int(sheet.cell_value(row,4)),int(sheet.cell_value(row,5)),int(sheet.cell_value(row,6)),int(sheet.cell_value(row,7)))
             print "genning tags for sku: " + str(temp)
             add_tag_to_canvas(nprices,ntext,nquantities)
     print "You need to grab " + str(small_page_count+need_small) + " small tag sheets and " + str(big_page_count+need_big) + " large tag sheets"
