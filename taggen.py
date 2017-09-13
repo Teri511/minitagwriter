@@ -314,16 +314,20 @@ if len(sys.argv) == 3:
             #error checking goes here
             #find the sku in the catalog and pull its info
             #info goes: name,description,normal price
-            info = catalog[sheet.cell_value(row,0)]
+            if str(sheet.cell_value(row,0))[3]=="-":
+                temp = int(str(sheet.cell_value(row,0))[0:3] + str(sheet.cell_value(row,0))[4:])
+            else:
+                temp = int(sheet.cell_value(row,0))
+            info = catalog[temp]
             #add the info
             if int(sheet.cell_value(row,2)) > 0 or int(sheet.cell_value(row,3)) > 0 or int(sheet.cell_value(row,4)) > 0:
                 need_small = 1;
             if int(sheet.cell_value(row,5)) > 0 or int(sheet.cell_value(row,6)) > 0 or int(sheet.cell_value(row,7)) > 0:
                 need_big = 1;
             nprices = (info[2],sheet.cell_value(row,1))
-            ntext = (info[0],int(sheet.cell_value(row,0)),info[1])
+            ntext = (info[0],int(temp),info[1])
             nquantities = (int(sheet.cell_value(row,2)),int(sheet.cell_value(row,3)),int(sheet.cell_value(row,4)),int(sheet.cell_value(row,5)),int(sheet.cell_value(row,6)),int(sheet.cell_value(row,7)),int(sheet.cell_value(row,8)))
-            print "genning tags for sku: " + str(int(sheet.cell_value(row,0)))
+            print "genning tags for sku: " + str(temp)
             add_tag_to_canvas(nprices,ntext,nquantities)
     print "You need to grab " + str(small_page_count+need_small) + " small tag sheets and " + str(big_page_count+need_big) + " large tag sheets"
     raw_input("Press Enter to continue...")
