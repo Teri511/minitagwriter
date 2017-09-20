@@ -200,7 +200,7 @@ def add_tag_to_canvas(prices,text,quantities):
                 big_tag_count = 0
                 big_curr_row = 0
                 big_page_count += 1
-                big_canvas = Image.new("RGB",(2430,3008),(150,150,255))
+                big_canvas = Image.new("RGB",(2430,3108),(255,150,150))
                 b_draw = ImageDraw.Draw(big_canvas)
             #split the string using evil casting magic
             dollar = str(int(prices[0]))
@@ -235,7 +235,7 @@ def add_tag_to_canvas(prices,text,quantities):
         tag = Image.open("images/big/bsale.png")
 
         name = str(text[0]).split("?")
-        for count in range(0,quantities[3]):
+        for count in range(0,quantities[4]):
             #check to see if we've filled a page
             if big_tag_count > 9:
                 #dump the current canvas to a file and start a new one
@@ -243,7 +243,7 @@ def add_tag_to_canvas(prices,text,quantities):
                 big_tag_count = 0
                 big_curr_row = 0
                 big_page_count += 1
-                big_canvas = Image.new("RGB",(2430,3008),(150,150,255))
+                big_canvas = Image.new("RGB",(2430,3108),(255,150,150))
                 b_draw = ImageDraw.Draw(big_canvas)
             #split the string using evil casting magic
             dollar = str(int(prices[1]))
