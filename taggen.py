@@ -407,5 +407,26 @@ if len(sys.argv) == 3:
             print "genning tags for sku: " + str(temp)
             add_tag_to_canvas(nprices,ntext,nquantities)
     print "You need to grab " + str(small_page_count+need_small) + " small tag sheets and " + str(big_page_count+need_big) + " large tag sheets"
+#TODO: treat the last argument as a flag and not a count modifier
+elif len(sys.argv) == 4:
+    print "hello"
+    #open up the excel file and get the first sheet
+    #NOTE: the columns in the sheet only exist up until the farthest filled cell, same goes for rows
+    #so if you only have data in cell 0,0 you can't ask for cell 1,1. However if you have data in cell 0,0 and 10,10
+    #you can ask for data all the way up to 10,10 and just get nulls
+    book = xlrd.open_workbook(filename=sys.argv[1])
+    sheet = book.sheet_by_index(0)
+
+    #loop across each row
+    for row in range(1,sheet.nrows):
+        #check to make sure our users didn't skip any rows
+        if sheet.cell_value(row,0) != '':
+            #check for valid data across the row
+            #pull the info and pass to the tag maker routine
+            nprices = (sheet.cell_value(row,3),sheet.cell_value(row,4))
+            ntext = (sheet.cell_value(row,1),sheet.cell_value(row,0),sheet.cell_value(row,2))
+            nquantities = (int(sheet.cell_value(row,5)),int(sheet.cell_value(row,6)),int(sheet.cell_value(row,7)),int(sheet.cell_value(row,8)),int(sheet.cell_value(row,9)),int(sheet.cell_value(row,10)),int(sheet.cell_value(row,11)))
+            print "genning row " + str(row)
+            add_tag_to_canvas(nprices,ntext,nquantities)
 else:
     print "incorrect number of arguments"
