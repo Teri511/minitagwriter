@@ -10,7 +10,7 @@ def split_name(old_name):
     new_name = ""
     for word in range(0,len(split)):
         if line_count > 3:
-            print "ending a name early: " + str(burger)
+            #print "ending a name early: " + str(burger)
             break
         if letter_count + len(split[word]) > 15:
             new_name = new_name + "?" + split[word]

@@ -33,6 +33,7 @@ from PIL import Image, ImageFont, ImageDraw
 #set up the global canvas/draw space/fonts and number of each tag generated
 small_canvas = Image.new("RGB",(2430,3008),(220,220,220))
 big_canvas = Image.new("RGB",(2430,3108),(220,220,220))
+#parts_canvas = Image.new("RGB",(),())
 draw = ImageDraw.Draw(small_canvas)
 b_draw = ImageDraw.Draw(big_canvas)
 small_font = ImageFont.truetype("MyriadPro-Cond.ttf",35)
@@ -306,6 +307,58 @@ def add_tag_to_canvas(prices,text,quantities):
     if quantities[6] > 0:
         #generate parts tags
         print "generating parts tags"
+        tag = Image.open("images/parts/pbase.png")
+        name = str(text[0]).split("?")
+        for count in range(0,quantities[4]):
+            #check to see if we've filled a page
+            if big_tag_count > 9:
+                #dump the current canvas to a file and start a new one
+                big_canvas.save("output/big page "+ str(big_page_count) + ".png","PNG",dpi=(300,300))
+                big_tag_count = 0
+                big_curr_row = 0
+                big_page_count += 1
+                big_canvas = Image.new("RGB",(2430,3108),(255,150,150))
+                b_draw = ImageDraw.Draw(big_canvas)
+            #split the string using evil casting magic
+            dollar = str(int(prices[1]))
+            o_dollar = str(int(prices[0]))
+            #I'm so sorry
+            #take the price, convert it to a string and take the last 2 chars from it, these will always be the cents
+            cents = str(prices[1])[len(str(prices[1]))-2] + str(prices[1])[len(str(prices[1]))-1]
+            o_cents = str(prices[0])[len(str(prices[0]))-2] + str(prices[0])[len(str(prices[0]))-1]
+            #hacky check to get rid of the "no cent" bug
+            if cents[0] == ".":
+                cents=cents[1] + "0"
+            if o_cents[0] == ".":
+                o_cents=o_cents[1] + "0"
+            px,py = b_draw.textsize(dollar,font=b_dollar_font)
+            #paste in the tag
+            big_canvas.paste(tag, (((big_tag_count%2)*1051)+160,(big_curr_row*600)+107))
+            #add the text here
+            #first the name
+            for line in range(0,len(name)):
+                b_draw.text((((big_tag_count%2)*1051)+200,(big_curr_row*600)+150+(70*line)),name[line],font=dollar_font,fill=(0,0,0,255))
+            #now the dollar
+            b_draw.text((((big_tag_count%2)*1051)+1075-px,(big_curr_row*600)+350),dollar,font=b_dollar_font,fill=(255,255,255,255))
+            #now the cents
+            b_draw.text((((big_tag_count%2)*1051)+1075,(big_curr_row*600)+350),cents,font=b_cent_font,fill=(255,255,255,255))
+            #next, the sku
+            b_draw.text((((big_tag_count%2)*1051)+925,(big_curr_row*600)+600),str(text[1])[0:3]+"-"+str(text[1])[3:],font=cent_font,fill=(255,255,255,255))
+            #since its a sale tag, add the word "sale"
+            b_draw.text((((big_tag_count%2)*1051)+890,(big_curr_row*600)+130),"Sale",font=b_extra_font,fill=(255,255,255,255))
+            print str(prices[0])
+            if prices[0] != 0:
+                #calc the percent off and draw it
+                discount = 100-(((prices[1])/(prices[0]))*100)
+                if int(prices[1]) < int(prices[0]):
+                    b_draw.text((((big_tag_count%2)*1051)+930,(big_curr_row*600)+295),str(int(discount))+"% Off",font=b_percent_font,fill=(255,255,255,255))
+                    #draw the original price
+                    b_draw.text((((big_tag_count%2)*1051)+200,(big_curr_row*600)+600),"Regular Price: "+o_dollar+"."+o_cents,font=cent_font,fill=(0,0,0,255))
+            #adjust row position
+            if big_tag_count%2 == 1:
+                big_curr_row += 1
+            big_tag_count +=1
+        big_canvas.save("output/big page "+ str(big_page_count) + ".png","PNG",dpi=(300,300))
 
 
 ###################################################
